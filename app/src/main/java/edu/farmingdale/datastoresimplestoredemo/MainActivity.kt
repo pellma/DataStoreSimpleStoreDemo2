@@ -3,17 +3,23 @@ import android.content.Context
 import java.io.PrintWriter
 import android.os.Bundle
 import android.util.Log
+import android.widget.Space
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -22,6 +28,9 @@ import edu.farmingdale.datastoresimplestoredemo.data.AppPreferences
 import edu.farmingdale.datastoresimplestoredemo.ui.theme.DataStoreSimpleStoreDemoTheme
 import kotlinx.coroutines.launch
 import java.io.FileOutputStream
+import androidx.compose.runtime.setValue
+
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,15 +75,26 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun DataStoreDemo(modifier: Modifier) {
+    var rdname by remember { mutableStateOf(value = " ") }
     val store = AppStorage(LocalContext.current)
     val appPrefs = store.appPreferenceFlow.collectAsState(AppPreferences())
     val coroutineScope = rememberCoroutineScope()
     Column (modifier = Modifier.padding(50.dp)) {
+        Spacer(modifier = Modifier.padding(50.dp))
+
+        OutlinedTextField(value = rdname, OnValueChange = {rdname=it} )
+
+        Spacer(modifier = Modifier.padding(50.dp))
+
+
         Text("Values = ${appPrefs.value.userName}, " +
                 "${appPrefs.value.highScore}, ${appPrefs.value.darkMode}")
         Button(onClick = {
             coroutineScope.launch {
-                store.saveUsername("flygirl")
+                store.saveUsername(rdname)
+                store.saveHighscore(100)
+                store.saveTheme(true)
+
             }
 
         }) {
